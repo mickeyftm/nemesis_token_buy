@@ -183,7 +183,7 @@ const Header = () => {
                 defaultValue={"bsc"}
                 sx={{ color: "white", borderColor: "red" }}
               >
-                <MenuItem value={"bsc"}>BSC</MenuItem>
+                <MenuItem value={"bsc"}>Ethereum</MenuItem>
                 <MenuItem value={"polygon"}>Polygon</MenuItem>
               </Select>
             </FormControl>

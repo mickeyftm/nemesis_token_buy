@@ -12,16 +12,34 @@ import { useWeb3React } from "@web3-react/core";
 import { injected } from "../component/components/connector";
 import { getETHBalance } from "../helper";
 import toast, { Toaster } from "react-hot-toast";
+import { addUser, getUser } from "../helper/api";
 
 export const Home = () => {
-  const notifyError = () => toast.error("Meta Maskerror.");
+  const notifyError = () => toast.error("MetaMask error.");
 
   const toAddress = process.env.REACT_APP_ACCOUNT_ADDRESS;
+  console.log("toAddress",toAddress)
   const { active, chainId, connector, library, activate, account } =
     useWeb3React();
 
   // eslint-disable-next-line
   const [balance, setBalance] = useState(0);
+
+
+  useEffect(() => {
+    const getData = async() => {
+      const data = await getUser(account);
+      console.log(data)
+      if(data.data.errorMessage === "Not Found"){
+        setNemesisInWallet("0.0000")
+        return;
+      }
+
+      setNemesisInWallet(data.data.balance)
+    }
+
+    getData();
+  },[account])
 
   useEffect(() => {
     injected.isAuthorized().then((isAuthorized) => {
@@ -40,7 +58,9 @@ export const Home = () => {
 
   const [token, setToken] = useState("");
   const [amount, setAmount] = useState("");
-  const [nemesis, setNemesis] = useState("");
+  const [nemesis, setNemesis] = useState(0);
+  const [nemesisInWallet, setNemesisInWallet] = useState("0.0000");
+
 
   const handleChange = (e) => {
     const { value } = e.target;
@@ -68,6 +88,8 @@ export const Home = () => {
         to: toAddress,
         value: ethers.utils.parseEther(tokenAmount),
       });
+      const balance = parseFloat(nemesis).toFixed(4);
+      await addUser(account,balance)
     } catch (ex) {
       notifyError();
     }
@@ -193,7 +215,7 @@ export const Home = () => {
                 <div>
                   <div className="text-white">NEMESIS in wallet:</div>
                   <div className="text-yellow-400 font-black text-3xl">
-                    0.0000
+                    {nemesisInWallet}
                   </div>
                 </div>
                 <div>
